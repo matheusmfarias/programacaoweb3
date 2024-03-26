@@ -7,13 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.example.projeto.dtos.ImovelDTO;
 import com.example.projeto.dtos.ImovelDTOResposta;
@@ -78,16 +76,18 @@ public class ImovelController {
 
 		ImovelModel imovel = service.transformaParaObjeto(imovelDTO);
 
-		if (!imovel.getUserModel().isAdmin()) {
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Você precisa ser um administrador para realizar esta ação");
-		}
+		// if (!imovel.getUserModel().isAdmin()) {
+		// 	throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+		// }
 
 
-		//String urlImagem = service.uploadImagem(imagem);
+		String urlImagem = service.uploadImagem(imagem);
 
-		//imovel.setImagem(urlImagem);
+		imovel.setImagem(urlImagem);
 
-		//service.insert(imovel);
+
+
+		service.insert(imovel);
 
 		return new ResponseEntity(ImovelDTOResposta.transformaEmDTO(imovel), HttpStatus.CREATED);
 	}

@@ -4,7 +4,6 @@ import com.example.projeto.models.UserModel;
 
 import lombok.Getter;
 
-//@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class UserDTOResposta{
     private Integer id;

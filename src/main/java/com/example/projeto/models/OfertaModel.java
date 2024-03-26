@@ -39,6 +39,10 @@ public class OfertaModel implements Serializable{
     @JsonIgnore
     private ImovelModel imovelModel;
 
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private UserModel userModel;
+
 
     public TipoOferta getTipoOferta() {
         return TipoOferta.toEnum(tipoOferta);

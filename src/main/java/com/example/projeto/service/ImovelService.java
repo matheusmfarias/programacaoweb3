@@ -26,7 +26,6 @@ import com.example.projeto.models.ImovelModel;
 import com.example.projeto.models.UserModel;
 import com.example.projeto.repository.ImovelRepository;
 import com.example.projeto.repository.UserRepository;
-import com.example.projeto.service.exceptions.UnauthorizedException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

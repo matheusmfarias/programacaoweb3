@@ -12,10 +12,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.projeto.dtos.OfertaDTOResposta;
 import com.example.projeto.models.ImovelModel;
 import com.example.projeto.models.OfertaModel;
+import com.example.projeto.models.UserModel;
 import com.example.projeto.service.ImovelService;
 import com.example.projeto.service.OfertaService;
+import com.example.projeto.service.UserService;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -27,6 +30,9 @@ public class OfertaController {
 
 	@Autowired
 	private ImovelService imovelService;
+
+	@Autowired
+	private UserService userService;
 
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<OfertaModel>> getAll() {
@@ -42,15 +48,21 @@ public class OfertaController {
 	// }
 
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<OfertaModel> insert(@RequestBody OfertaModel model, @RequestParam Integer imovelId) {
+	public ResponseEntity<OfertaDTOResposta> insert(@RequestBody OfertaModel model, @RequestParam Integer imovelId, @RequestParam Integer usuarioId) {
 		
 		ImovelModel imovel = imovelService.find(imovelId);
 
 		model.setImovelModel(imovel);
 
+		UserModel userModel = userService.find(usuarioId);
+
+		model.setUserModel(userModel);
+
 		ofertaService.insert(model);
+
+		OfertaDTOResposta dto = new OfertaDTOResposta(model);
 		
-		return new ResponseEntity(model, HttpStatus.CREATED);
+		return new ResponseEntity(dto, HttpStatus.CREATED);
 	}
 
 }

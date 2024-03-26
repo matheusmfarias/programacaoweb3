@@ -33,6 +33,13 @@ public class UserModel implements Serializable {
     @OneToMany(mappedBy = "userModel")
     private List<ImovelModel> imoveis;
 
+    @OneToMany(mappedBy = "userModel")
+    private List<OfertaModel> ofertas;
+
+    @OneToMany(mappedBy = "userModel")
+    private List<ContratoModel> contratos;
+
+
 
     public UserModel() {
     };
