@@ -1,21 +1,35 @@
 package com.example.projeto.models;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
-import com.example.projeto.enums.TipoUsuario;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import com.example.projeto.enums.TipoUsuario;
+import com.example.projeto.enums.UserRole;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
+@AllArgsConstructor
 @Entity
 @Table(name = "usuarios")
-public class UserModel implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class UserModel implements  UserDetails{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,8 +41,17 @@ public class UserModel implements Serializable {
 
     private String senha;
 
-    private Integer tipoUsuario;
+    private String password;
 
+    @Column(unique=true)
+    private String email;
+
+    private boolean blocked;
+
+    @Enumerated(EnumType.STRING)
+    private UserRole userRole;
+
+    private Integer tipoUsuario;
 
     @OneToMany(mappedBy = "userModel")
     private List<ImovelModel> imoveis;
@@ -50,31 +73,65 @@ public class UserModel implements Serializable {
         this.nome = nome;
     }
 
-    public UserModel(String nome, String senha) {
+    public UserModel(String nome, String password) {
         super();
         this.nome = nome;
-        this.senha = senha;
+        this.password = password;
     }
 
-    public UserModel(String nome, String senha, TipoUsuario tipoUsuario) {
+    public UserModel(String nome, String password, TipoUsuario tipoUsuario) {
         super();
         this.nome = nome;
-        this.senha = senha;
+        this.password = password;
         this.tipoUsuario = tipoUsuario.getCodigo();
     }
 
-    public Integer getId() {
-        return id;
+    public UserModel(String nome, String email, String password, UserRole role){
+        this.email = email;
+        this.password = password;
+        this.email = email;
+        this.userRole = role;
+        this.senha = password; //ATENÇÃO -> GAMBIARRA PARA REMOVER NA LIMPEZA DO PROJETO
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+
+
+     @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (this.userRole == userRole.ADMIN){
+            return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
+        }
+        else {
+            return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        }
     }
 
-    public String getNome() {
-        return nome;
+    @Override
+    public String getUsername() {
+        return email; 
     }
 
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+   
     public TipoUsuario geTipoUsuario() {
         return TipoUsuario.toEnum(tipoUsuario);
     }
@@ -83,54 +140,5 @@ public class UserModel implements Serializable {
         this.tipoUsuario = tipoUsuario.getCodigo();
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public boolean isAdmin() {
-        return admin;
-    }
-
-    public void setAdmin(boolean admin) {
-        this.admin = admin;
-    }
-
-    public String getSenha() {
-        return senha;
-    }
-
-    public void setSenha(String senha) {
-        this.senha = senha;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((nome == null) ? 0 : nome.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        UserModel other = (UserModel) obj;
-        if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!id.equals(other.id))
-            return false;
-        if (nome == null) {
-            if (other.nome != null)
-                return false;
-        } else if (!nome.equals(other.nome))
-            return false;
-        return true;
-    }
+   
 }
