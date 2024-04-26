@@ -1,8 +1,10 @@
 package com.example.projeto.filters;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,22 +28,25 @@ public class SecurityFilter extends OncePerRequestFilter {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private Environment env;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        
+
         var token = this.recoverToken(request);
 
-        if(token != null){
-        
+        if (token != null) {
+
             var emailToken = tokenService.validateToken(token);
-            
+
             UserDetails user = userRepository.findByEmail(emailToken);
-            
+
             var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            
+
             System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
 
         }
@@ -49,14 +54,12 @@ public class SecurityFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-
-    private String recoverToken(HttpServletRequest request){
+    private String recoverToken(HttpServletRequest request) {
         var authHeader = request.getHeader("Authorization");
-        if(authHeader == null || !authHeader.startsWith("Bearer ")){
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return null;
         }
         return authHeader.replace("Bearer ", "");
     }
-    
-}
 
+}
