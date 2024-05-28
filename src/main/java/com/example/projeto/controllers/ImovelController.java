@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,7 +41,6 @@ public class ImovelController {
 				.collect(Collectors.toList());
 
 		return ResponseEntity.status(HttpStatus.OK).body(listaDtos);
-
 	}
 
 	// @RequestMapping(method = RequestMethod.POST)
@@ -77,19 +77,55 @@ public class ImovelController {
 		ImovelModel imovel = service.transformaParaObjeto(imovelDTO);
 
 		// if (!imovel.getUserModel().isAdmin()) {
-		// 	throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+		// throw new ResponseStatusException(HttpStatus.FORBIDDEN);
 		// }
-
 
 		String urlImagem = service.uploadImagem(imagem);
 
 		imovel.setImagem(urlImagem);
 
+		service.insert(imovel);
 
+		return new ResponseEntity(ImovelDTOResposta.transformaEmDTO(imovel), HttpStatus.CREATED);
+	}
+
+	@RequestMapping(method = RequestMethod.PUT)
+	public ResponseEntity<ImovelDTOResposta> atualizar(
+			@RequestParam("id") Integer id,
+			@RequestParam("descricao") String descricao,
+			@RequestParam("quartos") Integer quartos,
+			@RequestParam("vagas") Integer vagas,
+			@RequestParam("usuario_id") Integer usuarioId,
+			@RequestParam("imagem") MultipartFile imagem) {
+
+		ImovelDTO imovelDTO = new ImovelDTO();
+		imovelDTO.setId(id);
+		imovelDTO.setDescricao(descricao);
+		imovelDTO.setQuartos(quartos);
+		imovelDTO.setVagas(vagas);
+		imovelDTO.setUsuario_id(usuarioId);
+
+		ImovelModel imovel = service.transformaParaObjeto(imovelDTO);
+
+		String urlImagem = service.uploadImagem(imagem);
+
+		imovel.setImagem(urlImagem);
 
 		service.insert(imovel);
 
 		return new ResponseEntity(ImovelDTOResposta.transformaEmDTO(imovel), HttpStatus.CREATED);
+	}
+
+
+	 @GetMapping("/descontos")
+	 public ResponseEntity<List<ImovelDTOResposta>> getAllDesconto() {
+		List<ImovelModel> list = service.getAllDesconto();
+
+		List<ImovelDTOResposta> listaDtos = list.stream().map(imovel -> new ImovelDTOResposta(imovel))
+				.collect(Collectors.toList());
+
+		return ResponseEntity.status(HttpStatus.OK).body(listaDtos);
+
 	}
 
 }

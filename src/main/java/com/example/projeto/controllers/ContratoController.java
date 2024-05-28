@@ -55,7 +55,8 @@ public class ContratoController {
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Void> insert(@RequestBody ContratoModel model) {	
 		service.insert(model);
-		return new ResponseEntity(model, HttpStatus.CREATED);
+		return ResponseEntity.status(HttpStatus.CREATED).build();
+
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.example.projeto.controllers;
 
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.example.projeto.dtos.UserDTO;
 import com.example.projeto.dtos.UserDTOResposta;
@@ -80,6 +82,16 @@ public class UserController {
 		UserModel model = service.insert(dto.transformaParaObjeto());
 		return new ResponseEntity<>(UserDTOResposta.transformaEmDTO(model), HttpStatus.CREATED);
 	}
+
+	/*
+	@RequestMapping(method = RequestMethod.POST)
+	public ResponseEntity<Void> salvar2(@Valid @RequestBody UserDTO dto) {
+		UserModel model = service.insert(dto.transformaParaObjeto());
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("{id}").buildAndExpand(model.getId()).toUri();
+		
+		return ResponseEntity.created(uri).build();
+	}
+	 */
 
 
 	/*

@@ -40,7 +40,7 @@ public class ClienteController {
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Void> insert(@RequestBody ClienteModel model) {		
 		service.insert(model);
-		return ResponseEntity.status(HttpStatus.OK).build();
+		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 	@RequestMapping(method = RequestMethod.PUT)

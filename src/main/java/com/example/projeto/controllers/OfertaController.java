@@ -61,8 +61,9 @@ public class OfertaController {
 		ofertaService.insert(model);
 
 		OfertaDTOResposta dto = new OfertaDTOResposta(model);
-		
-		return new ResponseEntity(dto, HttpStatus.CREATED);
+
+		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
+
 
 }

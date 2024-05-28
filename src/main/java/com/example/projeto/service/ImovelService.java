@@ -137,4 +137,8 @@ public class ImovelService {
 		}
 	} 
 
+
+    public List<ImovelModel> getAllDesconto() {
+        return imovelRepository.getAllDesconto();
+    }
 }
