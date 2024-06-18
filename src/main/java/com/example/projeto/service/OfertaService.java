@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import com.example.projeto.models.OfertaModel;
 import com.example.projeto.repository.OfertaRepository;
 
-
 @Service
 public class OfertaService {
 
@@ -21,14 +20,18 @@ public class OfertaService {
     private OfertaRepository repository;
 
     public List<OfertaModel> getAll() {
-        try{
-        List<OfertaModel> list = repository.findAll();
-        return list;
-    }
-    catch(Exception e){
-        System.out.println(e.toString());
-        return null;
-    }
+        try {
+            List<OfertaModel> list = repository.findAll();
+            if (list == null || list.isEmpty()) {
+                System.out.println("Nenhuma oferta encontrada no banco de dados.");
+            } else {
+                System.out.println("Ofertas encontradas: " + list.size());
+            }
+            return list;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public OfertaModel find(Integer id) {
@@ -45,19 +48,17 @@ public class OfertaService {
         return repository.save(model);
     }
 
-    public void delete(Integer id){
-       OfertaModel model = find(id);
-       try{
+    public void delete(Integer id) {
+        OfertaModel model = find(id);
+        try {
             repository.deleteById(id);
-       }
-       catch(Exception e){
-            throw new DataIntegrityViolationException("Não foi possível exlcluir");
-       }
+        } catch (Exception e) {
+            throw new DataIntegrityViolationException("Não foi possível excluir");
+        }
     }
 
-    public Page<OfertaModel>  findPage(Integer pagina, Integer linhas, String ordem, String direcao){
+    public Page<OfertaModel> findPage(Integer pagina, Integer linhas, String ordem, String direcao) {
         PageRequest request = PageRequest.of(pagina, linhas, Direction.valueOf(direcao), ordem);
         return repository.findAll(request);
     }
-
 }

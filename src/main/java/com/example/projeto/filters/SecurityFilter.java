@@ -1,7 +1,6 @@
 package com.example.projeto.filters;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;

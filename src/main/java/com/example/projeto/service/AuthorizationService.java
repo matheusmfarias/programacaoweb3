@@ -13,32 +13,28 @@ import com.example.projeto.models.UserModel;
 import com.example.projeto.repository.UserRepository;
 
 @Service
-public class AuthorizationService implements UserDetailsService{
+public class AuthorizationService implements UserDetailsService {
 
-    @Autowired
-    UserRepository userRepository;
+  @Autowired
+  UserRepository userRepository;
 
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepository.findByEmail(email);
+  @Override
+  public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    return userRepository.findByEmail(email);
+  }
+
+  public ResponseEntity<Object> register(RegisterDTO registerDto) {
+    if (userRepository.findByEmail(registerDto.email()) != null) {
+      return ResponseEntity.badRequest().build();
+    } else {
+      String encryptedPassword = new BCryptPasswordEncoder().encode(registerDto.password());
+
+      UserModel userModel = new UserModel(registerDto.nome(), registerDto.email(), encryptedPassword,
+          registerDto.role());
+
+      this.userRepository.save(userModel);
+
+      return ResponseEntity.ok().build();
     }
-
-    public ResponseEntity<Object> register(RegisterDTO registerDto) {
-        
-       if(userRepository.findByEmail(registerDto.email()) != null){
-            return ResponseEntity.badRequest().build();
-       }
-       else {
-         String encryptedPassword = new BCryptPasswordEncoder().encode(registerDto.password());
-
-         UserModel userModel = new UserModel(registerDto.nome(), registerDto.email(), encryptedPassword, registerDto.role());
-        
-         this.userRepository.save(userModel);
-
-         return ResponseEntity.ok().build();
-
-       }
-    }
-      
-    
+  }
 }

@@ -6,6 +6,8 @@ import com.example.projeto.models.ContratoAluguelModel;
 import com.example.projeto.models.ContratoModel;
 import com.example.projeto.models.ContratoVendaModel;
 
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,10 +23,20 @@ public class ContratoDTOResposta {
     private Integer clienteId;
     private Integer usuarioId;
     private Integer imovelId;
+    private String nomeCliente;
+    private String descricaoImovel;
+    private String nomeUsuario;
     private Integer tipo;
+
+    @Temporal(TemporalType.DATE)
     private Date dataAssinatura;
+
+    @Temporal(TemporalType.DATE)
     private Date dataInicio;
+
+    @Temporal(TemporalType.DATE)
     private Date dataFim;
+    
     private String indiceReajuste;
 
     public ContratoDTOResposta(ContratoModel model){
@@ -33,6 +45,9 @@ public class ContratoDTOResposta {
         this.setClienteId(model.getClienteModel().getId());
         this.setUsuarioId(model.getUserModel().getId());
         this.setImovelId(model.getImovelModel().getId());
+        this.nomeCliente = model.getClienteModel().getNome();
+        this.descricaoImovel= model.getUserModel().getNome();
+        this.nomeUsuario = model.getImovelModel().getDescricao();
 
         if (model instanceof ContratoAluguelModel) {
             ContratoAluguelModel contratoAluguel = (ContratoAluguelModel) model;

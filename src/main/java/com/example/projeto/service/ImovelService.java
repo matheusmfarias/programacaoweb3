@@ -51,10 +51,6 @@ public class ImovelService {
         return model.orElse(null);
     }
 
-    // public ImovelModel insert(ImovelModel model) {
-    //     return imovelRepository.save(model);
-    // }
-
     public ImovelModel insert(ImovelModel model) {
         return imovelRepository.save(model);
     }
@@ -66,10 +62,13 @@ public class ImovelService {
 
     public void delete(Integer id) {
         ImovelModel model = find(id);
+        if (model == null) {
+            throw new DataIntegrityViolationException("Imóvel não encontrado");
+        }
         try {
             imovelRepository.deleteById(id);
         } catch (Exception e) {
-            throw new DataIntegrityViolationException("Não foi possível exlcluir");
+            throw new DataIntegrityViolationException("Não foi possível excluir o imóvel. Verifique se há dependências.");
         }
     }
 
@@ -84,7 +83,6 @@ public class ImovelService {
         ImovelModel imovel = new ImovelModel(dto.getDescricao(), dto.getQuartos(), dto.getVagas(), userModel);
 
         return imovelRepository.save(imovel);
-
     }
 
     public ImovelModel transformaParaObjeto(ImovelDTO imovelDTO) {
@@ -98,12 +96,8 @@ public class ImovelService {
                 userModel);
     }
 
-
-
     public String uploadImagem(MultipartFile imagem) {
 		try {
-
-
 			RestTemplate restTemplate = new RestTemplate();
 			restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 
@@ -135,8 +129,7 @@ public class ImovelService {
 			System.out.println(e.toString());
 			return null;
 		}
-	} 
-
+	}
 
     public List<ImovelModel> getAllDesconto() {
         return imovelRepository.getAllDesconto();

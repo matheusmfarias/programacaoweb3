@@ -1,17 +1,19 @@
 package com.example.projeto.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
+import com.example.projeto.controllers.exceptions.ResourceNotFoundException;
+import com.example.projeto.models.ClienteModel;
 import com.example.projeto.models.ContratoModel;
+import com.example.projeto.models.ImovelModel;
+import com.example.projeto.models.UserModel;
+import com.example.projeto.repository.ClienteRepository;
 import com.example.projeto.repository.ContratoRepository;
+import com.example.projeto.repository.ImovelRepository;
+import com.example.projeto.repository.UserRepository;
 
 @Service
 public class ContratoService {
@@ -19,19 +21,32 @@ public class ContratoService {
     @Autowired
     private ContratoRepository repository;
 
+    @Autowired
+    private ClienteRepository clienteRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private ImovelRepository imovelRepository;
+
     public List<ContratoModel> getAll() {
-        try {
-            List<ContratoModel> list = repository.findAll();
-            return list;
-        } catch (Exception e) {
-            System.out.println(e.toString());
-            return null;
-        }
+        return repository.findAll();
     }
 
-    public ContratoModel find(Integer id) {
-        Optional<ContratoModel> model = repository.findById(id);
-        return model.orElse(null);
+    public ClienteModel findClienteById(Integer id) {
+        return clienteRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
+    }
+
+    public UserModel findUserById(Integer id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+    }
+
+    public ImovelModel findImovelById(Integer id) {
+        return imovelRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Imóvel não encontrado"));
     }
 
     public ContratoModel insert(ContratoModel model) {
@@ -39,22 +54,13 @@ public class ContratoService {
     }
 
     public ContratoModel update(ContratoModel model) {
-        find(model.getId());
+        if (model.getId() == null) {
+            throw new IllegalArgumentException("O id do contrato não pode ser nulo.");
+        }
         return repository.save(model);
     }
 
     public void delete(Integer id) {
-        ContratoModel model = find(id);
-        try {
-            repository.deleteById(id);
-        } catch (Exception e) {
-            throw new DataIntegrityViolationException("Não foi possível exlcluir");
-        }
+        repository.deleteById(id);
     }
-
-    public Page<ContratoModel> findPage(Integer pagina, Integer linhas, String ordem, String direcao) {
-        PageRequest request = PageRequest.of(pagina, linhas, Direction.valueOf(direcao), ordem);
-        return repository.findAll(request);
-    }
-
 }

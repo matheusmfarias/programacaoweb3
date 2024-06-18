@@ -12,8 +12,8 @@ import lombok.Getter;
 
 
 @Getter
-public class UserDTO implements Serializable{
-    private static final long serialVersionUID =1L;
+public class UserDTO implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     private Integer id;
 
@@ -21,15 +21,14 @@ public class UserDTO implements Serializable{
     @Length(min = 10, max = 255, message = "Nome deve ter entre 10 e 255 caracteres")
     private String nome;
 
-    @NotEmpty(message = "Nome não pode ser em branco")
-    @NotBlank(message = "Nome não pode ser em branco")
-    @Length(min = 4, max = 10, message = "Senha deve ter entre ....")
+    @NotEmpty(message = "Senha não pode ser em branco")
+    @NotBlank(message = "Senha não pode ser em branco")
+    @Length(min = 4, max = 10, message = "Senha deve ter entre 4 e 10 caracteres")
     private String senha;
 
-    public UserDTO(){}
+    public UserDTO() {}
 
-    public UserModel transformaParaObjeto(){
+    public UserModel transformaParaObjeto() {
         return new UserModel(nome, senha);
     }
-
 }

@@ -2,6 +2,10 @@ package com.example.projeto.models;
 
 import java.io.Serializable;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -22,7 +26,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="imoveis")
-public class ImovelModel implements Serializable{
+public class ImovelModel implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -40,15 +44,16 @@ public class ImovelModel implements Serializable{
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
+    @JsonBackReference
     private UserModel userModel;
 
-    @OneToMany(mappedBy="imovelModel")
+    @OneToMany(mappedBy = "imovelModel")
+    @JsonManagedReference
     private List<OfertaModel> ofertas;
 
-    @OneToMany(mappedBy="imovelModel")
+    @OneToMany(mappedBy = "imovelModel")
+    @JsonManagedReference("imovel-contrato")
     private List<ContratoModel> contratos;
-
-
 
     public ImovelModel(String descricao, Integer quartos, Integer vagas, UserModel userModel){
         super();
@@ -76,12 +81,10 @@ public class ImovelModel implements Serializable{
         this.userModel = userModel;
     }   
     
-    
     public ImovelModel(String descricao, Integer quartos, Integer vagas, UserModel userModel, List<OfertaModel> ofertas){
         super();
         this.descricao = descricao;
         this.quartos = quartos;
         this.userModel = userModel;
     }   
-
 }

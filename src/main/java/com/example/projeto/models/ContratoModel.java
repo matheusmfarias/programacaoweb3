@@ -2,6 +2,8 @@ package com.example.projeto.models;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -28,33 +30,37 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-@Table(name="contratos")
+@Table(name = "contratos")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name="tipo", discriminatorType=DiscriminatorType.INTEGER)
+@DiscriminatorColumn(name = "tipo", discriminatorType = DiscriminatorType.INTEGER)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "tipo")
 @JsonSubTypes({
-    @JsonSubTypes.Type(value = ContratoAluguelModel.class, name = "1"),
-    @JsonSubTypes.Type(value = ContratoVendaModel.class, name = "2")
+        @JsonSubTypes.Type(value = ContratoAluguelModel.class, name = "1"),
+        @JsonSubTypes.Type(value = ContratoVendaModel.class, name = "2")
 })
 public class ContratoModel implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Integer id;
 
     private double valor;
-    
+
     @ManyToOne
     @JoinColumn(name = "cliente_id")
+    @JsonBackReference("cliente-contrato")
     private ClienteModel clienteModel;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
+    @JsonBackReference("usuario-contrato")
     private UserModel userModel;
 
     @ManyToOne
     @JoinColumn(name = "imovel_id")
+    @JsonBackReference("imovel-contrato")
     private ImovelModel imovelModel;
 
     public ContratoModel(double valor, ClienteModel clienteModel, UserModel userModel, ImovelModel imovelModel) {
@@ -63,6 +69,4 @@ public class ContratoModel implements Serializable {
         this.userModel = userModel;
         this.imovelModel = imovelModel;
     }
-
-  
 }

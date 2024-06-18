@@ -5,15 +5,19 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.projeto.dtos.ClienteRespostaDTO;
+import com.example.projeto.dtos.ClienteDTO;
 import com.example.projeto.models.ClienteModel;
 import com.example.projeto.service.ClienteService;
 
@@ -22,38 +26,35 @@ import com.example.projeto.service.ClienteService;
 @RequestMapping(value = "/clientes")
 public class ClienteController {
 
-	@Autowired
-	private ClienteService service;
+    @Autowired
+    private ClienteService service;
 
-	@RequestMapping(method = RequestMethod.GET)
-	public ResponseEntity<List<ClienteRespostaDTO>> getAll() {
-		List<ClienteModel> list = service.getAll();
-		
-		List<ClienteRespostaDTO> dtoList = list.stream()
-			.map(cliente -> new ClienteRespostaDTO(cliente))
-			.collect(Collectors.toList());
-		
-		return ResponseEntity.status(HttpStatus.OK).body(dtoList);
-	}
-	
+    @GetMapping
+    public ResponseEntity<List<ClienteDTO>> getAll() {
+        List<ClienteModel> clientes = service.getAll();
+        List<ClienteDTO> clientesDTO = clientes.stream().map(ClienteDTO::new).collect(Collectors.toList());
+        return new ResponseEntity<>(clientesDTO, HttpStatus.OK);
+    }
 
-	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<Void> insert(@RequestBody ClienteModel model) {		
-		service.insert(model);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
-	}
+    @PostMapping
+    public ResponseEntity<ClienteDTO> insert(@RequestBody ClienteDTO clienteDTO) {
+        ClienteModel cliente = service.transformaParaObjeto(clienteDTO);
+        service.insert(cliente);
+        return new ResponseEntity<>(ClienteDTO.transformaEmDTO(cliente), HttpStatus.CREATED);
+    }
 
-	@RequestMapping(method = RequestMethod.PUT)
-	public ResponseEntity<Void> update(@RequestBody ClienteModel model) {		
-		service.insert(model);
-		return ResponseEntity.status(HttpStatus.OK).build();
-	}
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ClienteDTO> update(@PathVariable Integer id, @RequestBody ClienteDTO clienteDTO) {
+        clienteDTO.setId(id);
+        ClienteModel cliente = service.transformaParaObjeto(clienteDTO);
+        ClienteModel updatedCliente = service.update(cliente);
+        return new ResponseEntity<>(ClienteDTO.transformaEmDTO(updatedCliente), HttpStatus.OK);
+    }
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-	public ResponseEntity<Void> delete(@PathVariable Integer id) {
-		service.delete(id);
-		return ResponseEntity.noContent().build();
-	}
-
-
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Integer id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 }
+

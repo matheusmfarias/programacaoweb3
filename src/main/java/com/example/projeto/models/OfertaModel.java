@@ -23,11 +23,12 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name="ofertas")
-public class OfertaModel implements Serializable{
+public class OfertaModel implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Integer id;
 
     private Integer tipoOferta;
@@ -35,23 +36,20 @@ public class OfertaModel implements Serializable{
     private double valor;
 
     @ManyToOne
-    @JoinColumn(name="imovel_id")
     @JsonIgnore
+    @JoinColumn(name="imovel_id")
     private ImovelModel imovelModel;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "usuario_id")
     private UserModel userModel;
-
 
     public TipoOferta getTipoOferta() {
         return TipoOferta.toEnum(tipoOferta);
     }
 
-    public void setTipoUsuario(TipoOferta tipoOferta) {
-        this.tipoOferta = tipoOferta.getCodigo();
+    public void setTipoOferta(TipoOferta tipoOferta) {
+        this.tipoOferta = tipoOferta != null ? tipoOferta.getCodigo() : null;
     }
-
-       
-    
 }
